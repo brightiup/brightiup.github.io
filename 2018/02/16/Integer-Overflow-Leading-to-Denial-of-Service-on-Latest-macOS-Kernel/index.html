@@ -86,13 +86,17 @@
 
 
 
-<meta property="og:type" content="website">
-<meta property="og:title" content="BRIGHTIUP">
-<meta property="og:url" content="http://yoursite.com/index.html">
+<meta name="description" content="There exists an integer overflow in kqueue syscall which can lead to kernel deadlock(Or crash on some devices) on latest macOS and iOS. kqueue in BSD is just like epoll in Linux which powers IO multip">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Integer Overflow Leading to Denial of Service on Latest macOS Kernel">
+<meta property="og:url" content="http://yoursite.com/2018/02/16/Integer-Overflow-Leading-to-Denial-of-Service-on-Latest-macOS-Kernel/index.html">
 <meta property="og:site_name" content="BRIGHTIUP">
+<meta property="og:description" content="There exists an integer overflow in kqueue syscall which can lead to kernel deadlock(Or crash on some devices) on latest macOS and iOS. kqueue in BSD is just like epoll in Linux which powers IO multip">
 <meta property="og:locale" content="default">
+<meta property="og:updated_time" content="2018-02-16T12:38:21.632Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="BRIGHTIUP">
+<meta name="twitter:title" content="Integer Overflow Leading to Denial of Service on Latest macOS Kernel">
+<meta name="twitter:description" content="There exists an integer overflow in kqueue syscall which can lead to kernel deadlock(Or crash on some devices) on latest macOS and iOS. kqueue in BSD is just like epoll in Linux which powers IO multip">
 
 
 
@@ -122,13 +126,13 @@
 
 
 
-  <link rel="canonical" href="http://yoursite.com/"/>
+  <link rel="canonical" href="http://yoursite.com/2018/02/16/Integer-Overflow-Leading-to-Denial-of-Service-on-Latest-macOS-Kernel/"/>
 
 
 
 
 
-  <title>BRIGHTIUP</title>
+  <title>Integer Overflow Leading to Denial of Service on Latest macOS Kernel | BRIGHTIUP</title>
   
 
 
@@ -147,8 +151,7 @@
     
   
 
-  <div class="container sidebar-position-left 
-  page-home">
+  <div class="container sidebar-position-left page-post-detail">
     <div class="headband"></div>
 
     <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
@@ -221,9 +224,9 @@
         <div class="content-wrap">
           <div id="content" class="content">
             
-  <section id="posts" class="posts-expand">
+
+  <div id="posts" class="posts-expand">
     
-      
 
   
 
@@ -253,9 +256,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2018/02/16/Integer-Overflow-Leading-to-Denial-of-Service-on-Latest-macOS-Kernel/" itemprop="url">Integer Overflow Leading to Denial of Service on Latest macOS Kernel</a></h1>
+          <h1 class="post-title" itemprop="name headline">Integer Overflow Leading to Denial of Service on Latest macOS Kernel</h1>
         
 
         <div class="post-meta">
@@ -305,9 +306,7 @@
       
 
       
-        
-          
-            <p>There exists an integer overflow in <em>kqueue</em> syscall which can lead to kernel deadlock(Or crash on some devices) on latest macOS and iOS.</p>
+        <p>There exists an integer overflow in <em>kqueue</em> syscall which can lead to kernel deadlock(Or crash on some devices) on latest macOS and iOS.</p>
 <p><em>kqueue</em> in BSD is just like epoll in Linux which powers IO multiplexing. It means users can monitor a set of actions of file descriptors, like read or write available. At the same time, an object of kqueue in kernel is also a file descriptor in user space, so users can monitor a file descriptor of kqueue object by kqueue.</p>
 <p>The kqueues which monitor other objects are called parent kqueue,  so we can name the kqueue to  be  monitored as child kqueue, it is fine until now because they are both file descriptors. The problem is that the user can make a circular kqueue which means the two kqueues can monitor each other. </p>
 <p>Lets look at the source.  The function associated with this issue lies in <em>bsd/kern/kern_event.c</em> named kqueue_kqfilter.<br>This function is called when the child kqueue is attached to the list of parent kqueue. </p>
@@ -328,8 +327,6 @@
 <p>ProductName:    Mac OS X<br>ProductVersion:    10.13.3<br>BuildVersion:    17D47</p>
 <p>This poc is also worked on my iOS 11.0.2 of iPhone 8 Plus, I believe it can also work on latest iOS 11.2.5.</p>
 
-          
-        
       
     </div>
     
@@ -346,132 +343,43 @@
       
 
       
-
       
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/01/01/Happy-New-Year/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="brightiup">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="BRIGHTIUP">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2018/01/01/Happy-New-Year/" itemprop="url">Happy New Year</a></h1>
+        <div class="post-widgets">
         
 
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-01-01T00:00:00+08:00">
-                2018-01-01
-              </time>
-            
+        
 
-            
-
-            
-          </span>
-
+        
           
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
+          <div id="needsharebutton-postbottom">
+            <span class="btn">
+              <i class="fa fa-share-alt" aria-hidden="true"></i>
+            </span>
+          </div>
+        
         </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
       
       
 
       
-        
-          
-            <img src="/2018/01/01/Happy-New-Year/gakki.jpg">
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/01/01/Happy-New-Year/" rel="next" title="Happy New Year">
+                <i class="fa fa-chevron-left"></i> Happy New Year
+              </a>
+            
+          </div>
 
-          
-        
-      
-    </div>
-    
-    
-    
+          <span class="post-nav-divider"></span>
 
-    
-
-    
-
-    
-
-    <footer class="post-footer">
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
       
 
       
-
-      
-
-      
-      
-        <div class="post-eof"></div>
       
     </footer>
   </div>
@@ -481,10 +389,11 @@
   </article>
 
 
-    
-  </section>
 
-  
+    <div class="post-spread">
+      
+    </div>
+  </div>
 
 
           </div>
@@ -492,6 +401,10 @@
 
 
           
+
+  
+
+
 
         </div>
         
@@ -716,6 +629,10 @@
   
 
   
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
 
   
 
