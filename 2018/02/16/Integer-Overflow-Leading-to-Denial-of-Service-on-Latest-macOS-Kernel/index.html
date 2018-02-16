@@ -86,17 +86,17 @@
 
 
 
-<meta name="description" content="由于苹果觉得这不是一个security implication，所以就公开一下这个bug。偷懒直接把发给苹果的报告摘了下来，忽略英文表达。下面是正文。 There exists an integer overflow in kqueue syscall which can lead to kernel deadlock(Or crash on some devices) on latest mac">
+<meta name="description" content="由于苹果坚持觉得这不是一个security implication，所以就公开一下这个bug。偷懒直接把发给苹果的报告摘了下来，忽略英文表达。下面是正文。 There exists an integer overflow in kqueue syscall which can lead to kernel deadlock(Or crash on some devices) on latest m">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Integer Overflow Leading to Denial of Service on Latest macOS Kernel">
 <meta property="og:url" content="http://yoursite.com/2018/02/16/Integer-Overflow-Leading-to-Denial-of-Service-on-Latest-macOS-Kernel/index.html">
 <meta property="og:site_name" content="BRIGHTIUP">
-<meta property="og:description" content="由于苹果觉得这不是一个security implication，所以就公开一下这个bug。偷懒直接把发给苹果的报告摘了下来，忽略英文表达。下面是正文。 There exists an integer overflow in kqueue syscall which can lead to kernel deadlock(Or crash on some devices) on latest mac">
+<meta property="og:description" content="由于苹果坚持觉得这不是一个security implication，所以就公开一下这个bug。偷懒直接把发给苹果的报告摘了下来，忽略英文表达。下面是正文。 There exists an integer overflow in kqueue syscall which can lead to kernel deadlock(Or crash on some devices) on latest m">
 <meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2018-02-16T13:16:10.077Z">
+<meta property="og:updated_time" content="2018-02-16T13:27:24.183Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Integer Overflow Leading to Denial of Service on Latest macOS Kernel">
-<meta name="twitter:description" content="由于苹果觉得这不是一个security implication，所以就公开一下这个bug。偷懒直接把发给苹果的报告摘了下来，忽略英文表达。下面是正文。 There exists an integer overflow in kqueue syscall which can lead to kernel deadlock(Or crash on some devices) on latest mac">
+<meta name="twitter:description" content="由于苹果坚持觉得这不是一个security implication，所以就公开一下这个bug。偷懒直接把发给苹果的报告摘了下来，忽略英文表达。下面是正文。 There exists an integer overflow in kqueue syscall which can lead to kernel deadlock(Or crash on some devices) on latest m">
 
 
 
@@ -306,7 +306,7 @@
       
 
       
-        <p>由于苹果觉得这不是一个security implication，所以就公开一下这个bug。<br>偷懒直接把发给苹果的报告摘了下来，忽略英文表达。下面是正文。</p>
+        <p>由于苹果坚持觉得这不是一个security implication，所以就公开一下这个bug。<br>偷懒直接把发给苹果的报告摘了下来，忽略英文表达。下面是正文。</p>
 <p>There exists an integer overflow in <em>kqueue</em> syscall which can lead to kernel deadlock(Or crash on some devices) on latest macOS and iOS.</p>
 <p><em>kqueue</em> in BSD is just like epoll in Linux which powers IO multiplexing. It means users can monitor a set of actions of file descriptors, like read or write available. At the same time, an object of kqueue in kernel is also a file descriptor in user space, so users can monitor a file descriptor of kqueue object by kqueue.</p>
 <p>The kqueues which monitor other objects are called parent kqueue,  so we can name the kqueue to  be  monitored as child kqueue, it is fine until now because they are both file descriptors. The problem is that the user can make a circular kqueue which means the two kqueues can monitor each other. </p>
