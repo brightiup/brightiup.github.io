@@ -234,130 +234,6 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/03/28/Code-Review-And-Thinking-of-macOS-and-iOS/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="brightiup">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="BRIGHTIUP">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2018/03/28/Code-Review-And-Thinking-of-macOS-and-iOS/" itemprop="url">macOS/iOS 代码审计笔记</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-03-28T21:14:50+08:00">
-                2018-03-28
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <ul>
-<li><a href="/2018/03/28/Code-Review-And-Thinking-of-macOS-and-iOS/xnu.pdf" title="[XNU代码审计笔记]">[XNU代码审计笔记]</a></li>
-<li><a href="/2018/03/28/Code-Review-And-Thinking-of-macOS-and-iOS/IntelFBClientControl.pdf" title="[IntelFBClientControl驱动审计笔记]">[IntelFBClientControl驱动审计笔记]</a>
-</li>
-</ul>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/02/16/Integer-Overflow-Leading-to-Denial-of-Service-on-Latest-macOS-Kernel/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -429,8 +305,7 @@
       
         
           
-            <p>由于苹果坚持觉得这不是一个security implication，所以就公开一下这个bug。<br>偷懒直接把发给苹果的报告摘了下来，忽略英文表达。下面是正文。</p>
-<p>There exists an integer overflow in <em>kqueue</em> syscall which can lead to kernel deadlock(Or crash on some devices) on latest macOS and iOS.</p>
+            <p>There exists an integer overflow in <em>kqueue</em> syscall which can lead to kernel deadlock(Or crash on some devices) on latest macOS and iOS.</p>
 <p><em>kqueue</em> in BSD is just like epoll in Linux which powers IO multiplexing. It means users can monitor a set of actions of file descriptors, like read or write available. At the same time, an object of kqueue in kernel is also a file descriptor in user space, so users can monitor a file descriptor of kqueue object by kqueue.</p>
 <p>The kqueues which monitor other objects are called parent kqueue,  so we can name the kqueue to  be  monitored as child kqueue, it is fine until now because they are both file descriptors. The problem is that the user can make a circular kqueue which means the two kqueues can monitor each other. </p>
 <p>Lets look at the source.  The function associated with this issue lies in <em>bsd/kern/kern_event.c</em> named kqueue_kqfilter.<br>This function is called when the child kqueue is attached to the list of parent kqueue. </p>
@@ -531,7 +406,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">2</span>
+                  <span class="site-state-item-count">1</span>
                   <span class="site-state-item-name">posts</span>
                 </a>
               </div>
