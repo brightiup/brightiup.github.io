@@ -227,6 +227,26 @@
         </li>
       
         
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            Tags
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            Categories
+          </a>
+        </li>
+      
+        
         <li class="menu-item menu-item-archives">
           <a href="/archives/" rel="section">
             
@@ -311,6 +331,28 @@
           </span>
 
           
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Apple-OS/" itemprop="url" rel="index">
+                    <span itemprop="name">Apple OS</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
 
           
             
@@ -340,14 +382,10 @@
       
         
           
-            <p>There exists an integer overflow in <em>kqueue</em> syscall which can lead to kernel deadlock(Or crash on some devices) on latest macOS and iOS.</p>
-<p><em>kqueue</em> in BSD is just like epoll in Linux which powers IO multiplexing. It means users can monitor a set of actions of file descriptors, like read or write available. At the same time, an object of kqueue in kernel is also a file descriptor in user space, so users can monitor a file descriptor of kqueue object by kqueue.</p>
-<p>The kqueues which monitor other objects are called parent kqueue,  so we can name the kqueue to  be  monitored as child kqueue, it is fine until now because they are both file descriptors. The problem is that the user can make a circular kqueue which means the two kqueues can monitor each other. </p>
-<p>Lets look at the source.  The function associated with this issue lies in <em>bsd/kern/kern_event.c</em> named <strong>kqueue_kqfilter</strong>.<br>This function is called when the child kqueue is attached to the list of parent kqueue. </p>
-<p>This is a piece of comment in this function. </p>
+            <p>There exists an integer overflow in <em>kqueue</em> syscall which can lead to kernel deadlock(Or crash on some devices) on latest macOS and iOS. <em>kqueue</em> in BSD is just like epoll in Linux which powers IO multiplexing. It means users can monitor a set of actions of file descriptors, like read or write available. At the same time, an object of kqueue in kernel is also a file descriptor in user space, so users can monitor a file descriptor of kqueue object by kqueue. The kqueues which monitor other objects are called parent kqueue,  so we can name the kqueue to  be  monitored as child kqueue, it is fine until now because they are both file descriptors. The problem is that the user can make a circular kqueue which means the two kqueues can monitor each other. </p>
+<p>Lets look at the source.  The function associated with this issue lies in <em>bsd/kern/kern_event.c</em> named <strong>kqueue_kqfilter</strong>. This function is called when the child kqueue is attached to the list of parent kqueue. This is a piece of comment in this function. </p>
 <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment"> * We have to avoid creating a cycle when nesting kqueues</span></span><br><span class="line"><span class="comment"> * inside another.  Rather than trying to walk the whole</span></span><br><span class="line"><span class="comment"> * potential DAG of nested kqueues, we just use a simple</span></span><br><span class="line"><span class="comment"> * ceiling protocol.  When a kqueue is inserted into another,</span></span><br><span class="line"><span class="comment"> * we check that the (future) parent is not already nested</span></span><br><span class="line"><span class="comment"> * into another kqueue at a lower level than the potenial</span></span><br><span class="line"><span class="comment"> * child (because it could indicate a cycle).  If that test</span></span><br><span class="line"><span class="comment"> * passes, we just mark the nesting levels accordingly.</span></span><br><span class="line"><span class="comment"> */</span></span><br></pre></td></tr></table></figure>
-<p>It seems fine because the level of child will always be lower than the parent. But the level field of kqueue is just a 16 bit unsigned integer which means we can overflow it easily. </p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment"> * kqueue - common core definition of a kqueue</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> *          No real structures are allocated of this type. They are</span></span><br><span class="line"><span class="comment"> *          either kqfile objects or kqworkq objects - each of which is</span></span><br><span class="line"><span class="comment"> *          derived from this definition.</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">kqueue</span> &#123;</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">waitq_set</span>    <span class="title">kq_wqs</span>;</span>       <span class="comment">/* private waitq set */</span></span><br><span class="line">	<span class="keyword">lck_spin_t</span>          kq_lock;      <span class="comment">/* kqueue lock */</span></span><br><span class="line">	<span class="keyword">uint16_t</span>            kq_state;     <span class="comment">/* state of the kq */</span></span><br><span class="line">	<span class="keyword">uint16_t</span>            kq_level;     <span class="comment">/* nesting level of the kq */</span></span><br><span class="line">	<span class="keyword">uint32_t</span>            kq_count;     <span class="comment">/* number of queued events */</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">proc</span>         *<span class="title">kq_p</span>;</span>        <span class="comment">/* process containing kqueue */</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">kqtailq</span>      <span class="title">kq_queue</span>[1];</span>  <span class="comment">/* variable array of kqtailq structs */</span></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>It seems fine because the level of child will always be lower than the parent. But the level field of kqueue is just a 16 bit unsigned integer which means we can overflow it easily.<br><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment"> * kqueue - common core definition of a kqueue</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> *          No real structures are allocated of this type. They are</span></span><br><span class="line"><span class="comment"> *          either kqfile objects or kqworkq objects - each of which is</span></span><br><span class="line"><span class="comment"> *          derived from this definition.</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">kqueue</span> &#123;</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">waitq_set</span>    <span class="title">kq_wqs</span>;</span>       <span class="comment">/* private waitq set */</span></span><br><span class="line">	<span class="keyword">lck_spin_t</span>          kq_lock;      <span class="comment">/* kqueue lock */</span></span><br><span class="line">	<span class="keyword">uint16_t</span>            kq_state;     <span class="comment">/* state of the kq */</span></span><br><span class="line">	<span class="keyword">uint16_t</span>            kq_level;     <span class="comment">/* nesting level of the kq */</span></span><br><span class="line">	<span class="keyword">uint32_t</span>            kq_count;     <span class="comment">/* number of queued events */</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">proc</span>         *<span class="title">kq_p</span>;</span>        <span class="comment">/* process containing kqueue */</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">kqtailq</span>      <span class="title">kq_queue</span>[1];</span>  <span class="comment">/* variable array of kqtailq structs */</span></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure></p>
 <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="keyword">static</span> <span class="keyword">int</span> kqueue_kqfilter &#123;</span><br><span class="line">	...</span><br><span class="line">	<span class="keyword">if</span> (parentkq-&gt;kq_level &gt; <span class="number">0</span> &amp;&amp;</span><br><span class="line">	    parentkq-&gt;kq_level &lt; kq-&gt;kq_level)</span><br><span class="line">	&#123;</span><br><span class="line">		kqunlock(parentkq);</span><br><span class="line">		kn-&gt;kn_flags = EV_ERROR;</span><br><span class="line">		kn-&gt;kn_data = EINVAL;</span><br><span class="line">		<span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">	&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">		<span class="comment">/* set parent level appropriately */</span></span><br><span class="line">		<span class="keyword">if</span> (parentkq-&gt;kq_level == <span class="number">0</span>)</span><br><span class="line">			parentkq-&gt;kq_level = <span class="number">2</span>;</span><br><span class="line">		<span class="keyword">if</span> (parentkq-&gt;kq_level &lt; kq-&gt;kq_level + <span class="number">1</span>)</span><br><span class="line">			parentkq-&gt;kq_level = kq-&gt;kq_level + <span class="number">1</span>;</span><br><span class="line">		kqunlock(parentkq);</span><br><span class="line"></span><br><span class="line">		kn-&gt;kn_filtid = EVFILTID_KQREAD;</span><br><span class="line">		kqlock(kq);</span><br><span class="line">		KNOTE_ATTACH(&amp;kqf-&gt;kqf_sel.si_note, kn);</span><br><span class="line">		<span class="comment">/* indicate nesting in child, if needed */</span></span><br><span class="line">		<span class="keyword">if</span> (kq-&gt;kq_level == <span class="number">0</span>)</span><br><span class="line">			kq-&gt;kq_level = <span class="number">1</span>;</span><br><span class="line"></span><br><span class="line">		<span class="keyword">int</span> count = kq-&gt;kq_count;</span><br><span class="line">		kqunlock(kq);</span><br><span class="line">		<span class="keyword">return</span> (count &gt; <span class="number">0</span>);</span><br><span class="line">	&#125;</span><br><span class="line">	...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>Line 16 is the root cause of this integer overflow. When the kq-&gt;kq_level is 65535 and parentkq-&gt;kq_level is 2(Changed to 2 when it is 0), the parentkq-&gt;kq_level will be set to 0. When we do this in the opposite way, it can bypass the condition of the if statement.</p>
 <a href="/2018/02/16/Integer-Overflow-Leading-to-Denial-of-Service-on-Latest-macOS-Kernel/circular_queue.c" title="Download Proof of concept.">Download Proof of concept.</a>
@@ -357,8 +395,7 @@
 <li>./circular_queue</li>
 </ol>
 <p>After that you can see a kernel crash or kernel deadlock.  </p>
-<p>Information about my device(sw_vers): </p>
-<p>ProductName:    Mac OS X<br>ProductVersion:    10.13.3<br>BuildVersion:    17D47</p>
+<p>Information about my device(sw_vers):<br>ProductName:    Mac OS X<br>ProductVersion:    10.13.3<br>BuildVersion:    17D47</p>
 <p>This poc is also worked on my iOS 11.0.2 of iPhone 8 Plus, I believe it can also work on latest iOS 11.2.5.</p>
 
           
@@ -448,7 +485,25 @@
             
 
             
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">1</span>
+                  <span class="site-state-item-name">categories</span>
+                </a>
+              </div>
+            
 
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">1</span>
+                  <span class="site-state-item-name">tags</span>
+                </a>
+              </div>
             
 
           </nav>
