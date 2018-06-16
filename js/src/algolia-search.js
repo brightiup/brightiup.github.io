@@ -1,30 +1,25 @@
 /* global instantsearch: true */
 /*jshint camelcase: false */
-
 $(document).ready(function () {
   var algoliaSettings = CONFIG.algolia;
   var isAlgoliaSettingsValid = algoliaSettings.applicationID &&
-                               algoliaSettings.apiKey &&
-                               algoliaSettings.indexName;
-
+    algoliaSettings.apiKey &&
+    algoliaSettings.indexName;
   if (!isAlgoliaSettingsValid) {
     window.console.error('Algolia Settings are invalid.');
     return;
   }
-
   var search = instantsearch({
     appId: algoliaSettings.applicationID,
     apiKey: algoliaSettings.apiKey,
     indexName: algoliaSettings.indexName,
     searchFunction: function (helper) {
       var searchInput = $('#algolia-search-input').find('input');
-
       if (searchInput.val()) {
         helper.search();
       }
     }
   });
-
   // Registering Widgets
   [
     instantsearch.widgets.searchBox({
@@ -37,17 +32,19 @@ $(document).ready(function () {
       hitsPerPage: algoliaSettings.hits.per_page || 10,
       templates: {
         item: function (data) {
-          var link = data.permalink ? data.permalink : (CONFIG.root + data.path);
+          var link = data.permalink ? data.permalink : (CONFIG.root +
+            data.path);
           return (
             '<a href="' + link + '" class="algolia-hit-item-link">' +
-              data._highlightResult.title.value +
+            data._highlightResult.title.value +
             '</a>'
           );
         },
         empty: function (data) {
           return (
             '<div id="algolia-hits-empty">' +
-              algoliaSettings.labels.hits_empty.replace(/\$\{query}/, data.query) +
+            algoliaSettings.labels.hits_empty.replace(/\$\{query}/,
+              data.query) +
             '</div>'
           );
         }
@@ -62,12 +59,13 @@ $(document).ready(function () {
       templates: {
         body: function (data) {
           var stats = algoliaSettings.labels.hits_stats
-                        .replace(/\$\{hits}/, data.nbHits)
-                        .replace(/\$\{time}/, data.processingTimeMS);
+            .replace(/\$\{hits}/, data.nbHits)
+            .replace(/\$\{time}/, data.processingTimeMS);
           return (
             stats +
             '<span class="algolia-powered">' +
-            '  <img src="' + CONFIG.root + 'images/algolia_logo.svg" alt="Algolia" />' +
+            '  <img src="' + CONFIG.root +
+            'images/algolia_logo.svg" alt="Algolia" />' +
             '</span>' +
             '<hr />'
           );
@@ -94,22 +92,19 @@ $(document).ready(function () {
       }
     })
   ].forEach(search.addWidget, search);
-
   search.start();
-
-  $('.popup-trigger').on('click', function(e) {
+  $('.popup-trigger').on('click', function (e) {
     e.stopPropagation();
     $('body')
-      .append('<div class="search-popup-overlay algolia-pop-overlay"></div>')
+      .append(
+        '<div class="search-popup-overlay algolia-pop-overlay"></div>')
       .css('overflow', 'hidden');
     $('.popup').toggle();
     $('#algolia-search-input').find('input').focus();
   });
-
-  $('.popup-btn-close').click(function(){
+  $('.popup-btn-close').click(function () {
     $('.popup').hide();
     $('.algolia-pop-overlay').remove();
     $('body').css('overflow', '');
   });
-
 });

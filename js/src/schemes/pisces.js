@@ -1,16 +1,13 @@
 $(document).ready(function () {
-
   var sidebarInner = $('.sidebar-inner');
-
   initAffix();
   resizeListener();
 
-  function initAffix () {
+  function initAffix() {
     var headerOffset = getHeaderOffset(),
-        footerOffset = getFooterOffset(),
-        sidebarHeight = $('#sidebar').height() + NexT.utils.getSidebarb2tHeight(),
-        contentHeight = $('#content').height();
-
+      footerOffset = getFooterOffset(),
+      sidebarHeight = $('#sidebar').height() + NexT.utils.getSidebarb2tHeight(),
+      contentHeight = $('#content').height();
     // Not affix if sidebar taller then content (to prevent bottom jumping).
     if (headerOffset + sidebarHeight < contentHeight) {
       sidebarInner.affix({
@@ -20,38 +17,41 @@ $(document).ready(function () {
         }
       });
     }
-
-    setSidebarMarginTop(headerOffset).css({ 'margin-left': 'initial' });
+    setSidebarMarginTop(headerOffset).css({
+      'margin-left': 'initial'
+    });
   }
 
-  function resizeListener () {
+  function resizeListener() {
     var mql = window.matchMedia('(min-width: 991px)');
-    mql.addListener(function(e){
-      if(e.matches){
+    mql.addListener(function (e) {
+      if (e.matches) {
         recalculateAffixPosition();
       }
     });
   }
 
-  function getHeaderOffset () {
+  function getHeaderOffset() {
     return $('.header-inner').height() + CONFIG.sidebar.offset;
   }
 
-  function getFooterOffset () {
+  function getFooterOffset() {
     var footerInner = $('.footer-inner'),
-        footerMargin = footerInner.outerHeight(true) - footerInner.outerHeight(),
-        footerOffset = footerInner.outerHeight(true) + footerMargin;
+      footerMargin = footerInner.outerHeight(true) - footerInner.outerHeight(),
+      footerOffset = footerInner.outerHeight(true) + footerMargin;
     return footerOffset;
   }
 
-  function setSidebarMarginTop (headerOffset) {
-    return $('#sidebar').css({ 'margin-top': headerOffset });
+  function setSidebarMarginTop(headerOffset) {
+    return $('#sidebar').css({
+      'margin-top': headerOffset
+    });
   }
 
-  function recalculateAffixPosition () {
+  function recalculateAffixPosition() {
     $(window).off('.affix');
-    sidebarInner.removeData('bs.affix').removeClass('affix affix-top affix-bottom');
+    sidebarInner.removeData('bs.affix').removeClass(
+      'affix affix-top affix-bottom');
     initAffix();
   }
-
 });
