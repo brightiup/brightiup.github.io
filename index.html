@@ -245,7 +245,10 @@
 
                   <div class="post-body" itemprop="articleBody">
 
-                    <p>When user closes a handle of
+                    <p>AppleHV.kext is the implementation of Hypervisor module on macOS
+                      which is used for virtualization. The IOUserClient class of
+                      this driver is
+                      <code>AppleHVClient</code>. When user closes a handle of
                       <code>AppleHVClient</code> the kernel will call
                       <code>AppleHVClient::free</code> via
                       <code>IOService::terminateWorker</code>, and this free function will
