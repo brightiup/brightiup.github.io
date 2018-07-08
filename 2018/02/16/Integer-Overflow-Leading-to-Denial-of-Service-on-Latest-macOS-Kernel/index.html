@@ -34,17 +34,17 @@
 
   <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
 
-  <meta name="keywords" content="Vulnerability,macOS,iOS," />
+  <meta name="keywords" content="macOS,Vulnerability,iOS," />
 
   <meta name="description" content="There exists an integer overflow in   kqueue syscall which can lead to kernel deadlock(Or crash on some devices)   on latest macOS and iOS.   kqueue in BSD is just like epoll in Linux which powers IO">
-  <meta name="keywords" content="Vulnerability,macOS,iOS">
+  <meta name="keywords" content="macOS,Vulnerability,iOS">
   <meta property="og:type" content="article">
   <meta property="og:title" content="Integer Overflow in Latest macOS&#x2F;iOS Kernel">
   <meta property="og:url" content="https://brightiup.me/2018/02/16/Integer-Overflow-Leading-to-Denial-of-Service-on-Latest-macOS-Kernel/index.html">
   <meta property="og:site_name" content="BRIGHTIUP">
   <meta property="og:description" content="There exists an integer overflow in   kqueue syscall which can lead to kernel deadlock(Or crash on some devices)   on latest macOS and iOS.   kqueue in BSD is just like epoll in Linux which powers IO">
   <meta property="og:locale" content="default">
-  <meta property="og:updated_time" content="2018-06-14T07:07:19.868Z">
+  <meta property="og:updated_time" content="2018-07-05T07:54:41.152Z">
   <meta name="twitter:card" content="summary">
   <meta name="twitter:title" content="Integer Overflow in Latest macOS&#x2F;iOS Kernel">
   <meta name="twitter:description" content="There exists an integer overflow in   kqueue syscall which can lead to kernel deadlock(Or crash on some devices)   on latest macOS and iOS.   kqueue in BSD is just like epoll in Linux which powers IO">
@@ -323,6 +323,8 @@
                       <br>BuildVersion: 17D47</p>
                     <p>This poc is also worked on my iOS 11.0.2 of iPhone 8 Plus, I
                       believe it can also work on latest iOS 11.2.5.</p>
+                    <p>Update on July 5, 2018: This issue still exists on latest macOS
+                      10.13.5 and iOS 11.4.</p>
 
                   </div>
 
@@ -330,9 +332,9 @@
 
                     <div class="post-tags">
 
-                      <a href="/tags/Vulnerability/" rel="tag"># Vulnerability</a>
-
                       <a href="/tags/macOS/" rel="tag"># macOS</a>
+
+                      <a href="/tags/Vulnerability/" rel="tag"># Vulnerability</a>
 
                       <a href="/tags/iOS/" rel="tag"># iOS</a>
 
@@ -418,7 +420,7 @@
                   </div>
 
                   <div class="site-state-item site-state-tags">
-                    <a href="/tags/index-1.html">
+                    <a href="/tags/index.html">
                       <span class="site-state-item-count">3</span>
                       <span class="site-state-item-name">tags</span>
                     </a>
