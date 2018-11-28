@@ -13,6 +13,9 @@
  *
  *  Tips for debugging on macOS: Turn Mac to sleep mode and ssh to the target machine, this may 
  *  help you concentrate on your work.
+ *
+ *  One more: Mach service com.apple.CARenderServer is reacheable from Safari sandbox on both macOS 
+ *  and iOS. com.apple.windowserver.active accurately on macOS versions prior to macOS 10.14.
  */
 
 
