@@ -1,8 +1,8 @@
 /**
- *	Brief: Integer overflow in CoreAnimation, CVE-2018-4415
- *	Usage:
- *		1. clang FunctionIntOverFlow.c -o function_over_flow 
- *		2. ./function_over_flow
+ *  Brief: Integer overflow in CoreAnimation, CVE-2018-4415
+ *  Usage:
+ *    1. clang FunctionIntOverFlow.c -o function_over_flow 
+ *    2. ./function_over_flow
  *
  *  Specifically, `CA::Render::InterpolatedFunction::allocate_storage` function in QuartzCore does
  *  not do any check for integer overflow in expression |result = (char *)malloc(4 * (v4 + v3));|.
@@ -127,6 +127,6 @@ static void do_int_overflow() {
 
 
 int main() {
-	do_int_overflow();
-	return 0;
+    do_int_overflow();
+    return 0;
 }
