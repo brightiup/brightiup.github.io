@@ -52,7 +52,7 @@ static void do_int_overflow() {
         MACH_MSGH_BITS_COMPLEX;
     msg_register.header.msgh_remote_port = p;
     msg_register.header.msgh_local_port = mig_get_reply_port();
-    msg_register.header.msgh_id = 40202;  // _XRegistenClient
+    msg_register.header.msgh_id = 40202;  // _XRegisterClient
 
     msg_register.body = 4;
     msg_register.ports[0].name = mach_task_self();
